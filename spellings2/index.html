@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Alistair Spellings — A Comprehensive Deep Dive ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f0e8;
+      --surface: #fbf8f3;
+      --ink: #1f1e1d;
+      --muted: #6b6560;
+      --line: #e3dccf;
+      --accent: #d97757;
+      --accent-soft: #f6e4da;
+      --sage: #7c9a7e;
+      --sage-soft: #e6eee4;
+      --blue: #5b7ea6;
+      --blue-soft: #e3eaf3;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #1c1b19; --surface: #252421; --ink: #ece6dc; --muted: #a39d94; --line: #3a3833;
+        --accent-soft: #3a2a22; --sage-soft: #26302a; --blue-soft: #232c38;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #1c1b19; --surface: #252421; --ink: #ece6dc; --muted: #a39d94; --line: #3a3833;
+      --accent-soft: #3a2a22; --sage-soft: #26302a; --blue-soft: #232c38;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Inter, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.65;
+      font-size: 17px;
+    }
+
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar .wrap { display: flex; justify-content: space-between; align-items: center; height: 56px; }
+    .brand { font-family: Fraunces, serif; font-weight: 600; }
+    .brand span { color: var(--accent); }
+
+    .toggle {
+      font: inherit;
+      font-size: 0.85rem;
+      background: var(--surface);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 14px;
+      cursor: pointer;
+    }
+
+    .eyebrow {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .eyebrow::before { content: ""; width: 24px; height: 1px; background: var(--accent); }
+
+    h1, h2, h3 { font-family: Fraunces, serif; font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; }
+    h1 { font-size: clamp(2.4rem, 7vw, 3.8rem); margin-bottom: 22px; }
+    h1 em, h2 em { color: var(--accent); }
+    h2 { font-size: clamp(1.7rem, 4.5vw, 2.4rem); margin-bottom: 18px; }
+    h3 { font-size: 1.25rem; margin-bottom: 6px; }
+
+    .hero { padding: 80px 0 40px; }
+    .lede { font-size: 1.2rem; color: var(--muted); max-width: 620px; }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 26px;
+    }
+
+    .chip {
+      font-size: 0.8rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    section { padding: 56px 0; border-top: 1px solid var(--line); }
+    section p + p { margin-top: 14px; }
+
+    .num {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      border-radius: 0 12px 12px 0;
+      padding: 18px 22px;
+      margin: 26px 0;
+    }
+
+    .callout.sage { border-color: var(--sage); background: var(--sage-soft); }
+    .callout.blue { border-color: var(--blue); background: var(--blue-soft); }
+
+    .callout .label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+    }
+
+    .callout.sage .label { color: var(--sage); }
+    .callout.blue .label { color: var(--blue); }
+
+    .tldr {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px 26px;
+      margin-top: 40px;
+    }
+
+    .tldr ul { list-style: none; margin-top: 10px; }
+    .tldr li { padding-left: 28px; position: relative; margin: 8px 0; }
+    .tldr li::before { content: "✓"; position: absolute; left: 0; color: var(--sage); font-weight: 600; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .stat b { font-family: Fraunces, serif; font-weight: 400; font-size: 2.2rem; display: block; line-height: 1.1; }
+    .stat small { color: var(--muted); font-size: 0.82rem; }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 26px 0;
+    }
+
+    .compare div { border-radius: 14px; padding: 18px; border: 1px solid var(--line); }
+    .compare .no { background: var(--surface); color: var(--muted); }
+    .compare .no b::before { content: "✗ "; }
+    .compare .yes { background: var(--accent-soft); border-color: var(--accent); }
+    .compare .yes b::before { content: "✓ "; color: var(--accent); }
+    .compare p { font-size: 0.92rem; margin-top: 6px; }
+
+    .tier { margin: 34px 0; }
+
+    .tier-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
+
+    .names { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .name {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px 10px 10px 4px;
+      padding: 8px 14px;
+      font-family: Fraunces, serif;
+      font-size: 1.1rem;
+      transition: transform 0.2s;
+    }
+
+    .name:hover { transform: translateY(-2px); }
+
+    blockquote {
+      font-family: Fraunces, serif;
+      font-style: italic;
+      font-size: 1.5rem;
+      line-height: 1.4;
+      border-left: 3px solid var(--accent);
+      padding-left: 22px;
+      margin: 30px 0;
+    }
+
+    .steps { counter-reset: s; list-style: none; }
+    .steps li { counter-increment: s; padding-left: 46px; position: relative; margin: 18px 0; }
+
+    .steps li::before {
+      content: counter(s, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      top: 2px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      padding: 1px 6px;
+    }
+
+    footer { padding: 50px 0 70px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); }
+
+    @media (max-width: 560px) { .compare { grid-template-columns: 1fr; } }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="wrap">
+      <div class="brand">alistair<span>.</span>scot</div>
+      <button class="toggle" id="toggle">◐ Theme</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">A field guide · 37 spellings · 5 tiers</div>
+      <h1>Alistair isn't a name. It's a <em>spectrum</em>.</h1>
+      <p class="lede">A comprehensive, nuanced deep dive into every way to spell Alistair — from the familiar to the genuinely obscure. Let's delve in.</p>
+      <div class="meta">
+        <span class="chip">📖 4 min read</span>
+        <span class="chip">🏴 Scottish Gaelic</span>
+        <span class="chip">✨ Updated Nov 2026</span>
+      </div>
+
+      <div class="tldr">
+        <div class="eyebrow">TL;DR</div>
+        <ul>
+          <li>There are <b>37</b> attested spellings — not one, not two, but thirty-seven.</li>
+          <li>They span <b>five centuries</b> and three languages.</li>
+          <li>The real story isn't the spelling — it's the journey.</li>
+        </ul>
+      </div>
+    </header>
+
+    <section>
+      <div class="num">01</div>
+      <div class="eyebrow">The big picture</div>
+      <h2>Why this <em>matters</em></h2>
+      <p>Here's the thing: most people think Alistair has one spelling. It doesn't. And honestly? That's the point.</p>
+      <p>Spelling Alistair isn't about correctness — it's about identity. It's not a typo, it's a choice. Not a mistake, but a statement.</p>
+
+      <div class="stats">
+        <div class="stat"><b>37</b><small>Distinct spellings</small></div>
+        <div class="stat"><b>527</b><small>Years of history</small></div>
+        <div class="stat"><b>3</b><small>Languages</small></div>
+        <div class="stat"><b>∞</b><small>Ways to get it wrong</small></div>
+      </div>
+
+      <div class="callout">
+        <span class="label">💡 Key insight</span>
+        The vowels are doing a lot of the heavy lifting here. Swap one <i>a</i> for an <i>i</i> and you're not just changing a letter — you're changing a lineage.
+      </div>
+    </section>
+
+    <section>
+      <div class="num">02</div>
+      <div class="eyebrow">Reframing the question</div>
+      <h2>Not this, <em>but this</em></h2>
+      <p>It's worth noting that how we think about spelling shapes everything that follows.</p>
+
+      <div class="compare">
+        <div class="no"><b>A list of names</b><p>Static. Transactional. Forgettable.</p></div>
+        <div class="yes"><b>A rich tapestry</b><p>Living. Layered. Quietly profound.</p></div>
+        <div class="no"><b>"Which is correct?"</b><p>A question with no good answer.</p></div>
+        <div class="yes"><b>"Which is <i>you</i>?"</b><p>The question that actually matters.</p></div>
+      </div>
+
+      <blockquote>It's not about how many l's you use. It's about what those l's represent.</blockquote>
+    </section>
+
+    <section id="spellings">
+      <div class="num">03</div>
+      <div class="eyebrow">The spellings</div>
+      <h2>The full <em>landscape</em></h2>
+      <p>Below, every spelling — carefully ranked from mainstream to mythic. Each one tells a story.</p>
+      <div id="tiers"></div>
+
+      <div class="callout sage">
+        <span class="label">✅ Good to know</span>
+        The deep cuts aren't just rare — they're historic. Aluster turns up in the Annals of Ulster in 1522. That's not trivia. That's heritage.
+      </div>
+    </section>
+
+    <section>
+      <div class="num">04</div>
+      <div class="eyebrow">A practical framework</div>
+      <h2>How to choose <em>your</em> spelling</h2>
+      <ol class="steps">
+        <li><b>Start with intention.</b> Ask yourself: what do I want my vowels to say about me?</li>
+        <li><b>Consider your audience.</b> Alistair is safe. Alusdur is bold. Both are valid.</li>
+        <li><b>Embrace the ambiguity.</b> There's no wrong answer — only answers you haven't explored yet.</li>
+      </ol>
+
+      <div class="callout blue">
+        <span class="label">⚠️ A note of caution</span>
+        It's important to remember that spelling is deeply personal. What works for one Alistair may not work for another — and that's okay.
+      </div>
+    </section>
+
+    <section>
+      <div class="num">05</div>
+      <div class="eyebrow">Wrapping up</div>
+      <h2>The bottom <em>line</em></h2>
+      <p>In short: Alistair isn't one name. It's thirty-seven. Each spelling is a small, quiet act of self-expression — a thread in a tapestry that stretches from 1499 to today.</p>
+      <p>Ultimately, the best spelling is the one that feels like home. 🏡</p>
+      <p>I hope this helps! Let me know if you'd like me to dive deeper into any particular spelling, or explore the broader Alexander ecosystem. ✨</p>
+    </section>
+
+    <footer>Crafted with care · alistair.scot · Every spelling is valid 💛</footer>
+  </div>
+
+  <script>
+    const tiers = [
+      ["Mainstream", "Tier 1 · the classics", ["Alistair", "Alastair", "Alasdair", "Alister", "Allister"]],
+      ["Emerging", "Tier 2 · quietly confident", ["Alaster", "Alastar", "Allistair", "Alistar", "Aleister", "Allaster"]],
+      ["Rare", "Tier 3 · for the discerning", ["Alisdair", "Alasteir", "Alaisdair", "Alaistair", "Alaister", "Alester", "Allester", "Alistaire", "Alystair", "Alyster"]],
+      ["Obscure", "Tier 4 · genuinely niche", ["Allystair", "Allyster", "Allistier", "Allastir", "Allistir", "Alistir", "Allaistar", "Alysdair", "Allysdair", "Alysdare"]],
+      ["Mythic", "Tier 5 · here be dragons", ["Ollister", "Alasdar", "Alusdar", "Alustar", "Aluster", "Alusdur"]],
+    ];
+
+    document.getElementById("tiers").innerHTML = tiers.map(([name, eyebrow, list]) => `
+      <div class="tier">
+        <div class="tier-head"><h3>${name}</h3><span class="eyebrow" style="margin:0">${eyebrow}</span></div>
+        <div class="names">${list.map(n => `<span class="name">${n}</span>`).join("")}</div>
+      </div>`).join("");
+
+    const root = document.documentElement;
+    document.getElementById("toggle").onclick = () => {
+      const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+      root.dataset.theme = dark ? "light" : "dark";
+    };
+  </script>
+</body>
+
+</html>
